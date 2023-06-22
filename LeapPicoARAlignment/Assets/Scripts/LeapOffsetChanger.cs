@@ -1,6 +1,4 @@
 using Leap.Unity;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -26,6 +24,8 @@ public class LeapOffsetChanger : MonoBehaviour
     private GameObject _ui;
     private string _yOffsetString, _zOffsetString, _xTiltString, _incrementAmountString;
 
+    private const string _yKey = "YOffset", _zKey = "ZOffset", _xKey = "XTilt";
+
     private void Awake()
     {
         _inputActions.Enable();
@@ -35,6 +35,23 @@ public class LeapOffsetChanger : MonoBehaviour
         _incrementAmountString = _incrementAmount.text;
         UpdateText();
 
+    }
+
+    private void Start()
+    {
+        if(PlayerPrefs.HasKey(_yKey))
+        {
+            _leapXRServiceProvider.deviceOffsetYAxis = PlayerPrefs.GetFloat(_yKey);
+        }
+        if (PlayerPrefs.HasKey(_zKey))
+        {
+            _leapXRServiceProvider.deviceOffsetZAxis = PlayerPrefs.GetFloat(_zKey);
+        }
+        if (PlayerPrefs.HasKey(_xKey))
+        {
+            _leapXRServiceProvider.deviceTiltXAxis = PlayerPrefs.GetFloat(_xKey);
+        }
+        UpdateText();
     }
 
     private void Update()
@@ -58,6 +75,9 @@ public class LeapOffsetChanger : MonoBehaviour
 
     public void ChangeValue()
     {
+        if (_currentMode == 3)
+            return;
+
         Vector2 currentStickVal = _inputActions.FindAction("Stick").ReadValue<Vector2>();
 
         if(_xLockTime > 0)
@@ -127,14 +147,18 @@ public class LeapOffsetChanger : MonoBehaviour
         {
             case 0:
                 _leapXRServiceProvider.deviceOffsetYAxis = Mathf.Round((_leapXRServiceProvider.deviceOffsetYAxis + val) * 1000f) / 1000f;
+                PlayerPrefs.SetFloat(_yKey, _leapXRServiceProvider.deviceOffsetYAxis);
                 break;
             case 1:
                 _leapXRServiceProvider.deviceOffsetZAxis = Mathf.Round((_leapXRServiceProvider.deviceOffsetZAxis + val) * 1000f) / 1000f;
+                PlayerPrefs.SetFloat(_zKey, _leapXRServiceProvider.deviceOffsetZAxis);
                 break;
             case 2:
                 _leapXRServiceProvider.deviceTiltXAxis = Mathf.Round((_leapXRServiceProvider.deviceTiltXAxis + val) * 1000f) / 1000f;
+                PlayerPrefs.SetFloat(_xKey, _leapXRServiceProvider.deviceTiltXAxis);
                 break;
         }
+        PlayerPrefs.Save();
         UpdateText();
     }
 
