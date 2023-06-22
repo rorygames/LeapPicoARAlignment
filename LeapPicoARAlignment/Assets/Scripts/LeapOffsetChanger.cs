@@ -22,6 +22,8 @@ public class LeapOffsetChanger : MonoBehaviour
 
     [SerializeField]
     private TextMeshProUGUI _yOffset, _zOffset, _xTilt, _incrementAmount;
+    [SerializeField]
+    private GameObject _ui;
     private string _yOffsetString, _zOffsetString, _xTiltString, _incrementAmountString;
 
     private void Awake()
@@ -47,7 +49,7 @@ public class LeapOffsetChanger : MonoBehaviour
     public void ChangeMode()
     {
         _currentMode++;
-        if (_currentMode > 2)
+        if (_currentMode > 3)
         {
             _currentMode = 0;
         }
@@ -146,5 +148,7 @@ public class LeapOffsetChanger : MonoBehaviour
         _yOffset.color = _currentMode == 0 ? Color.red : Color.white;
         _zOffset.color = _currentMode == 1 ? Color.red : Color.white;
         _xTilt.color = _currentMode == 2 ? Color.red : Color.white;
+
+        _ui.SetActive(_currentMode != 3);
     }
 }
